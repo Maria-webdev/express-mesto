@@ -1,17 +1,22 @@
-const user = require('../models/user');
+const User = require('../models/user');
 
 module.exports.getUsers = (req, res) => {
-  user.find({})
+  User.find({})
     .then((users) => res.send(users))
-    .catch(() => res.status(500).send({ message: 'Запрашиваемый ресурс не найден' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные' });
+      }
+      res.status(500).send({ message: 'Запрашиваемый ресурс не найден' });
+    });
 };
 
 module.exports.getUser = (req, res) => {
-  user.findById(req.params._id)
+  User.findById(req.params._id)
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Пользователь с таким id не найден' });
+        res.status(400).send({ message: 'Переданы некорректные данные' });
       }
       res.status(500).send({ message: 'Запрашиваемый ресурс не найден' });
     });
@@ -19,11 +24,11 @@ module.exports.getUser = (req, res) => {
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
-  user.create({ name, about, avatar })
+  User.create({ name, about, avatar })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Ошибка валидации' });
+        res.status(400).send({ message: 'ОШибка валидации' });
       }
       res.status(500).send({ message: 'Запрашиваемый ресурс не найден' });
     });
@@ -31,14 +36,11 @@ module.exports.createUser = (req, res) => {
 
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
-  user.findByIdAbdUpdate(req.params._id, { name, about }, { new: true })
+  User.findByIdAbdUpdate(req.params._id, { name, about }, { new: true })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Пользователь с таким id не найден' });
-      }
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Ошибка валидации' });
+        res.status(400).send({ message: 'Переданы некорректные данные' });
       }
       res.status(500).send({ message: 'Запрашиваемый ресурс не найден' });
     });
@@ -46,14 +48,11 @@ module.exports.updateUser = (req, res) => {
 
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
-  user.findByIdAbdUpdate(req.params._id, { avatar }, { new: true })
+  User.findByIdAbdUpdate(req.params._id, { avatar }, { new: true })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Пользователь с таким id не найден' });
-      }
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Ошибка валидации' });
+        res.status(400).send({ message: 'Переданы некорректные данные' });
       }
       res.status(500).send({ message: 'Запрашиваемый ресурс не найден' });
     });
