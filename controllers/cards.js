@@ -10,7 +10,7 @@ module.exports.getCards = (req, res) => {
       res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.message === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
       }
       res.status(500).send({ message: 'Запрашиваемый ресурс не найден' });
@@ -24,7 +24,7 @@ module.exports.createCard = (req, res) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.message === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
       }
       res.status(500).send({ message: 'Запрашиваемый ресурс не найден' });
@@ -41,7 +41,7 @@ module.exports.deleteCard = (req, res) => {
       res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.message === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
       }
       res.status(500).send({ message: 'Запрашиваемый ресурс не найден' });
@@ -62,7 +62,7 @@ module.exports.likeCard = (req, res) => {
       res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.message === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
       }
       res.status(500).send({ message: 'Запрашиваемый ресурс не найден' });
@@ -84,6 +84,9 @@ module.exports.dislikeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные' });
+      }
+      if (err.name === 'NotFound') {
         res.status(404).send({ message: 'Карточки с таким id не найдены' });
       }
       res.status(500).send({ message: 'Запрашиваемый ресурс не найден' });
