@@ -1,12 +1,13 @@
-const NotAuthError = require('../errors/not-found');
 const jwt = require('jsonwebtoken');
+const NotAuthError = require('../errors/not-found');
 
 module.exports = (req, res, next) => {
+
     const { authorization } = req.headers;
     const { JWT_SECRET = 'super-strong-secret' } = process.env;
 
-    if (!authorization || !authorization.startWith('Bearer ')) {
-        throw new NotAuthError({ message: 'Проблемы с аутентификацией' });
+    if (!authorization || !authorization.startsWith('Bearer ')) {
+        throw new NotAuthError('Проблемы с аутентификацией');
     }
 
     const token = authorization.replace('Bearer ', '');
@@ -16,8 +17,8 @@ module.exports = (req, res, next) => {
     try {
         payload = jwt.verify(token, JWT_SECRET);
     } catch (err) {
-        throw new NotAuthError({ message: 'Проблемы с аутентификацией' });
+        throw new NotAuthError('Проблемы с аутентификацией');
     }
     req.user = payload;
     next();
-}
+};
