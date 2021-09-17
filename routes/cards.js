@@ -2,11 +2,11 @@ const cardRouter = require('express').Router();
 const { cardIdValidation, cardValidation } = require('../middlewares/validation');
 
 const {
-    getCards,
-    createCard,
-    deleteCard,
-    likeCard,
-    dislikeCard,
+  getCards,
+  createCard,
+  deleteCard,
+  likeCard,
+  dislikeCard,
 } = require('../controllers/cards');
 
 cardRouter.get('/', getCards);
