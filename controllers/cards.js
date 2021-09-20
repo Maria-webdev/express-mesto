@@ -1,4 +1,5 @@
 const Card = require('../models/card');
+const Forbidden = require('../errors/forbidden');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -12,6 +13,8 @@ module.exports.getCards = (req, res, next) => {
     .catch((err) => {
       if (err.message === 'CastError') {
         res.status(400).send('Переданы некорректные данные');
+      } else {
+        next(err);
       }
     })
     .catch(next);
@@ -26,23 +29,33 @@ module.exports.createCard = (req, res, next) => {
     .catch((err) => {
       if (err.message === 'CastError') {
         res.status(400).send('Переданы некорректные данные');
+      } else {
+        next(err);
       }
     })
     .catch(next);
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params._id)
+  const id = req.user._id;
+  Card.findById(req.params._id)
     .then((card) => {
       if (!card) {
-        res.status(404).send('Нет пользователя с таким id');
+        res.status(404).send('Нет карточки с таким id');
         return;
       }
-      res.send('deleted');
+      if (card.owner.toString() !== id) {
+        throw new Forbidden('Нет доступа для удаления карточки');
+      } else {
+        card.remove();
+        res.send('deleted');
+      }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send('Переданы некорректные данные');
+      } else {
+        next(err);
       }
     })
     .catch(next);
@@ -64,6 +77,8 @@ module.exports.likeCard = (req, res, next) => {
     .catch((err) => {
       if (err.message === 'CastError') {
         res.status(400).send('Переданы некорректные данные');
+      } else {
+        next(err);
       }
     })
     .catch(next);
@@ -77,7 +92,7 @@ module.exports.dislikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(404).send('Нет пользователя с таким id');
+        res.status(404).send('Нет карточки с таким id');
         return;
       }
       res.send(card);
@@ -85,9 +100,8 @@ module.exports.dislikeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send('Переданы некорректные данные');
-      }
-      if (err.name === 'NotFound') {
-        res.status(404).send('Карточки с таким id не найдены');
+      } else {
+        next(err);
       }
     })
     .catch(next);
