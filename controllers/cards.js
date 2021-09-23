@@ -5,12 +5,7 @@ const BadRequestError = require('../errors/bad-request');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .then((card) => {
-      if (!card) {
-        throw new NotFoundError('Нет пользователя с таким id');
-      }
-      res.send(card);
-    })
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.message === 'CastError') {
         throw new BadRequestError('Переданы некорректные данные');
@@ -28,7 +23,7 @@ module.exports.createCard = (req, res, next) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      if (err.message === 'CastError') {
+      if (err.name === 'ValidationError') {
         throw new BadRequestError('Переданы некорректные данные');
       } else {
         next(err);
@@ -48,7 +43,7 @@ module.exports.deleteCard = (req, res, next) => {
         throw new Forbidden('Нет доступа для удаления карточки');
       } else {
         card.remove()
-          .then(() => res.send('deleted'));
+          .then(() => res.send({ message: 'deleted' }));
       }
     })
     .catch((err) => {

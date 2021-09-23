@@ -10,9 +10,6 @@ const NotFoundError = require('../errors/not-found');
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(() => {
-      throw new BadRequestError('Переданы некорректные данные');
-    })
     .catch(next);
 };
 
@@ -137,10 +134,10 @@ module.exports.getCurrentUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.message === 'NotValidId') {
-        res.status(404).send('Пользователь не найден');
+        throw new NotFoundError('Нет пользователя с таким id');
       }
       if (err.name === 'CastError') {
-        res.status(400).send('Переданы некорректные данные');
+        throw new BadRequestError('Переданы некорректные данные');
       } else {
         next(err);
       }
