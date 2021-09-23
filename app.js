@@ -35,20 +35,20 @@ app.use('*', (req, res, next) => next(new NotFoundError('Запрашиваем�
 app.use(errors());
 
 app.use((err, req, res, next) => {
-    const { statusCode = 500, message } = err;
-    res.status(statusCode).send({
-        message: statusCode === 500 ? 'серверная ошибка' : message,
-    });
-    next();
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({
+    message: statusCode === 500 ? 'серверная ошибка' : message,
+  });
+  next();
 });
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true,
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+  useUnifiedTopology: true,
 });
 
 app.listen(PORT, () => {
-    console.log(`App listening on port ${PORT}`);
+  console.log(`App listening on port ${PORT}`);
 });
